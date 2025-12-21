@@ -1,0 +1,20 @@
+.pio
+.vscode
+.idea
+
+# Build artifacts
+*.o
+*.elf
+*.bin
+*.hex
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
