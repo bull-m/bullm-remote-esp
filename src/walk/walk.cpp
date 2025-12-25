@@ -142,25 +142,36 @@ void WalkHandle(uint8_t *data, size_t len) {
     for (int i = 1; i < len;) {
         esp_task_wdt_reset(); // 喂食狗
         switch (mode) {
+            // (由于1字节和2字节的数据使用的多，所有给一个独立的控制指令，省一字节)
+            // 一字节数据
             case CONTROL_BYTE1: {
                 uint8_t high = data[i++];
                 uint16_t key = merge2byte(high, data[i++]);
-                if (!outputs[key]) {
-                    i++;
-                    continue;
-                }
-                outputs[key]->write(data[i++]);
+                uint8_t value = data[i++]; // 读取数据
+                if (!outputs[key]) continue; // 找不到设备
+                outputs[key]->write(value);
                 break;
             }
+                // 两字节数据
             case CONTROL_BYTE2: {
                 uint8_t high = data[i++];
                 uint16_t key = merge2byte(high, data[i++]);
-                if (!outputs[key]) {
-                    i += 2;
-                    continue;
+                int values[2] = {data[i++], data[i++]};
+                if (!outputs[key]) continue; // 找不到设备
+                outputs[key]->write(values, 2);
+                break;
+            }
+            // 多字节数据
+            case CONTROL_BYTES: {
+                uint8_t high = data[i++];
+                uint16_t key = merge2byte(high, data[i++]);
+                uint8_t length = data[i++];
+                int values[length];
+                for (int j = 0; j < length; j++) {
+                    values[j] = data[i++];
                 }
-                uint8_t value = data[i++];
-                outputs[key]->write2byte(value, data[i++]);
+                if (!outputs[key]) continue; // 找不到设备
+                outputs[key]->write(values, length);
                 break;
             }
 

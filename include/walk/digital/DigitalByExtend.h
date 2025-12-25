@@ -12,8 +12,7 @@ public:
     BasicDigitalExtend *extend;
     uint8_t pin;
     void attach()override; //连接引脚
-    void write(int state) override; // 写入
-    void write2byte(int _value, int _value2) override;
+    void write(int *_data, int length) override;
     int read() override; // 读取
     void detach() override;
 

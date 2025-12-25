@@ -9,6 +9,7 @@
 
 #define CONTROL_BYTE1 0x10
 #define CONTROL_BYTE2 0x11
+#define CONTROL_BYTES 0x13
 #define CONTROL_MAINTAIN 0x12
 
 // 设备的前缀

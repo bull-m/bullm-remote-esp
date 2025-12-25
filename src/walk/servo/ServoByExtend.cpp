@@ -8,7 +8,8 @@ ServoByExtend *BasicServoExtend::useServo(uint8_t index) {
     return servo;
 }
 
-void ServoByExtend::write(int _angle) {
+void ServoByExtend::write(int *_data, int length) {
+    int _angle = _data[0];
     if (_angle == 0xFF) {
         value = _angle;
         detach();

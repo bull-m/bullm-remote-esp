@@ -26,7 +26,8 @@ void ServoIO::setHz(int _hz) {
     }
 }
 
-void ServoIO::write(int _angle) {
+void ServoIO::write(int *_data, int length) {
+    int _angle = _data[0];
     if (_angle == 0xFF) {
         value = 0xFF;
         detach();

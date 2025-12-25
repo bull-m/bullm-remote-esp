@@ -16,7 +16,7 @@ public:
     void attach() override;
     void detach() override;
     int read() override;
-    void write(int _value) override;
+    void write(int *_data, int length) override;
 };
 
 #endif //ESP32S3_SERVOIO_H

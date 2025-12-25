@@ -18,9 +18,9 @@ public:
     void attach() override;
     void detach() override;
     int read() override;
-    void write(int _value) override;
-    void write2byte(int _value, int _value2) override;
+    void write(int *_data, int length) override;
     // ** PWM基础方法 **
+    void writePwm(int _value) override;
     void writePwmHigh(int _value) override;
 };
 

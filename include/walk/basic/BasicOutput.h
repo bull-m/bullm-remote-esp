@@ -22,15 +22,18 @@ public:
     int value = -1;
     int default_value{};
     bool link_reset = false;
-    OutputType type;
+    OutputType type = OUTPUT_TYPE_NO;
     unsigned long last_update_time = 0; // 最后的更新时间，不等于0表示需要检查超时
     virtual void reset(bool force) {
         if(force || link_reset){
             write(default_value);
         }
     }; // 前往默认位置(是否强制重置)
-    virtual void write(int _value){}; // 写入值
-    virtual void write2byte(int _value, int _value2){}; // 写入二字节数据
+    void write(int _value){
+        int v[1] = {_value}; // 参数归一
+        write(v, 1); // 参数归一
+    }; // 写入值
+    virtual void write(int *_data, int length){}; // 写入多个值
     virtual int read(){ return 0; }; // 读取值
     virtual void attach(){}; // 控制IO引脚的PWM
     virtual void detach(){}; // 释放资源

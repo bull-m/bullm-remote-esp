@@ -9,7 +9,6 @@ public:
     void attach() override;
     void detach() override;
     int read() override;
-    void write(int _value) override;
-    void write2byte(int _value, int _value2) override {};
+    void write(int *_data, int length) override;
 };
 #endif //ESP32S3_DigitalIO_H

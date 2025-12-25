@@ -13,7 +13,7 @@ void PwmByExtend::attach() {
     extend->attachPwm(pin);
 }
 
-void PwmByExtend::write(int _pwm) {
+void PwmByExtend::writePwm(int _pwm) {
     if(_pwm > max_pwm) _pwm = max_pwm;
     if(_pwm < min_pwm) _pwm = min_pwm;
 //    if(_pwm == value) return; // 值没有改变
@@ -30,8 +30,13 @@ void PwmByExtend::writePwmHigh(int _pwm) {
     extend->writePwmTall(pin, _pwm);
 }
 
-void PwmByExtend::write2byte(int _value, int _value2) {
-    writePwmHigh(merge2byte(_value, _value2));
+
+void PwmByExtend::write(int *_data, int length) {
+    if (length == 1) {
+        writePwm(_data[0]);
+    } else if (length == 2) {
+        writePwmHigh(merge2byte(_data[0], _data[1]));
+    }
 }
 
 int PwmByExtend::read() {

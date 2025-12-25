@@ -12,6 +12,7 @@ public:
     int hz = 50;
     int min_pwm = 0;
     int max_pwm = 255;
+    virtual void writePwm(int _value){}; // 写入值
     virtual void writePwmHigh(int _value){}; // 写入值高精度
 };
 #endif //ESP32S3_BasicPwm_H

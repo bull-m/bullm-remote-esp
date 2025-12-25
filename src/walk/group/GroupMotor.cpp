@@ -37,7 +37,11 @@ void GroupMotor::attach(BasicOutput *_forward, BasicOutput *_back, BasicOutput *
 }
 
 
-void GroupMotor::write2byte(int direction, int _speed) {
+void GroupMotor::write(int *_data, int length) {
+    walk(_data[0], _data[1]);
+}
+
+void GroupMotor::walk(int direction, int _speed) {
     last_update_time = millis(); // 刷新最后更新时间
     if(type == GROUP_TYPE_NO) return;
     _speed = _speed * (direction == 1 ? 1 : -1);
@@ -98,8 +102,9 @@ void GroupMotor::write2byte(int direction, int _speed) {
     }
 }
 
+
 void GroupMotor::detach() {
-    write2byte(0, 0);
+    walk(0, 0);
     forward = nullptr;
     back = nullptr;
     pwm = nullptr;
@@ -108,7 +113,7 @@ void GroupMotor::detach() {
 
 
 void GroupMotor::reset(bool force) {
-    write2byte(0, 0);
+    walk(0, 0);
 }
 
 int GroupMotor::read() {

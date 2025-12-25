@@ -33,12 +33,12 @@ public:
     void attach() override;
     void detach() override;
     int read() override;
-    void write(int _value) override {};
-    void write2byte(int _value, int _value2) override;
+    void write(int *_data, int length) override;
     void reset(bool force = false) override; // 重置速度
     void checkTimeout(); // 检查是否超时
 private:
     const unsigned long UDP_TIMEOUT = 1000;
+    void walk(int direction, int _speed);
 };
 
 #endif //ESP32S3_GroupMotor_H

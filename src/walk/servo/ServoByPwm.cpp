@@ -10,7 +10,8 @@ void ServoByPwm::attach(BasicPwm *_pwm) {
     pwm = _pwm;
 }
 
-void ServoByPwm::write(int _angle) {
+void ServoByPwm::write(int *_data, int length) {
+    int _angle = _data[0];
     if(!pwm) return;
     if (_angle == 0xFF) {
         detach();

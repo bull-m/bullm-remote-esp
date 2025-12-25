@@ -20,10 +20,6 @@ void DigitalByExtend::detach() {
     extend->detachDigital(pin);
 }
 
-void DigitalByExtend::write(int state) {
-    extend->writeDigital(pin, state);
-}
-
-void DigitalByExtend::write2byte(int _value, int _value2) {
-
+void DigitalByExtend::write(int *_data, int length) {
+    extend->writeDigital(pin, _data[0]); // 第一个字节
 }
