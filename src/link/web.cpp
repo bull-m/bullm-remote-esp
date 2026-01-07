@@ -25,7 +25,11 @@ void WebInit(){
     });
     // 获取wifi
     server.on("/api/wifi", HTTP_GET, [](AsyncWebServerRequest *request) {
-        request->send(200, "application/json", OptionsGet(OPTIONS_WIFi));
+        String data = OptionsGet(OPTIONS_WIFi);
+        if(data == ""){
+            data = "{}";
+        }
+        request->send(200, "application/json", data);
     });
     // 设置wifi
     server.on("/api/wifi-set", HTTP_GET, [](AsyncWebServerRequest *request) {
