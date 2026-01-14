@@ -79,7 +79,7 @@ void WsInit() {
             {
                 auto *info = (AwsFrameInfo *) arg;
                 // 一次传完
-                if (info->index == 0 && info->len == len) {
+                if (info->final && info->index == 0 && info->len == len) {
                     if (info->opcode == WS_TEXT) {
                         HandleWsText(data, len);
                     } else {  // 字节
@@ -87,7 +87,8 @@ void WsInit() {
                     }
                     return;
                 }
-                if (info->index == 0) {
+                if (info->index == 0 && info->num == 0) {
+                    delete all_data;
                     all_data = new uint8_t[info->len];
                 }
                 // 复制数据
@@ -95,13 +96,13 @@ void WsInit() {
                     all_data[i + info->index] = data[i];
                 }
                 // 最后一个包
-                if (info->index + len == info->len) { //
+                if ((info->index + len) == info->len && info->final) {
                     if (info->opcode == WS_TEXT) {
                         HandleWsText(all_data, info->len);
                     } else {  // 字节
                         HandleWsByte(all_data, info->len);
                     }
-                    delete[] all_data;
+                    delete all_data;
                 }
             }
                 break;
@@ -111,7 +112,7 @@ void WsInit() {
                 udp_serve_port = 61211;
                 Serial.printf("WebSocket client #%u connected from %s \n", client->id(),
                               client->remoteIP().toString().c_str());
-                client->text("{\"type\":\"control-change\",\"isControl\":true}"); // 指定控制权
+                client->text(R"({"type":"control-change","isControl":true})"); // 指定控制权
                 HandleConnect();
                 break;
             case WS_EVT_DISCONNECT:  // 有客户端断开连接
@@ -137,9 +138,11 @@ void WsAutoSend(const char *data, size_t len) {
 }
 
 void WsAutoSend(JsonDocument &json) {
-    String jsonString = "";
-    serializeJson(json, jsonString);
-    WsAutoSend(jsonString);
+    const size_t len = measureJson(json);
+    auto buffer = std::make_shared<std::vector<uint8_t>>(len);
+    assert(buffer);
+    serializeJson(json, buffer->data(), len);
+    ws.text(ws_id, std::move(buffer));
     json.clear();
 }
 

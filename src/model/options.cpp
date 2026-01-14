@@ -114,7 +114,8 @@ String OptionsGet(const char *key) {
 bool OptionsGetJson(JsonDocument &json, const char *key) {
     String data = OptionsGet(key);
     if(data != ""){
-        deserializeJson(json, data);
+        DeserializationError error = deserializeJson(json, data);
+        if(error) return false;
         return true;
     }
     return false;
