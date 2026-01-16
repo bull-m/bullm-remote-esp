@@ -13,9 +13,9 @@ uint8_t connectMultiWiFi();
 void WifiInit() {
     WiFiClass::setHostname("bullm-remote");
     WiFi.setTxPower(WIFI_POWER_19_5dBm); // 设置发射功率
-    JsonDocument json;
-    OptionsGetJson(json, OPTIONS_WIFi);
-    auto list = json["list"].as<JsonArray>();
+    auto network_json = OptionsGetJson(OPTIONS_WIFi);
+    auto network = network_json->as<JsonObject>();
+    auto list = network["list"].as<JsonArray>();
     if (list.size() > 0) {
         for (const auto &item: list) {
             wifiMulti.addAP(item["name"], item["pass"]);
@@ -31,9 +31,9 @@ void WifiInit() {
 }
 
 uint8_t connectMultiWiFi() {
-    JsonDocument json;
-    OptionsGetJson(json, OPTIONS_WIFi);
-    auto list = json["list"].as<JsonArray>();
+    auto network_json = OptionsGetJson(OPTIONS_WIFi);
+    auto network = network_json->as<JsonObject>();
+    auto list = network["list"].as<JsonArray>();
     uint8_t status = 0;
     if (list.size() > 0) {
         int i = 0;

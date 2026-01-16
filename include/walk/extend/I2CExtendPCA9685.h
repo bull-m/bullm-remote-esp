@@ -37,7 +37,7 @@ class I2CExtendPCA9685: public BasicPINExtend, public BasicPwmExtend, public Bas
 private:
     bool _write(uint8_t reg, uint8_t data);
     uint8_t _read(uint8_t reg);
-    void _reset();
+    bool _reset();
     bool _setFreq(uint16_t freq);
     bool _setPwm(uint8_t pin, uint16_t on, uint16_t off);
     bool _setPwm(uint8_t pin, uint8_t val);

@@ -1,6 +1,8 @@
 #include "walk/walk.h"
 #include "walk/extend/I2CExtendPCA9685.h"
 #include "walk/extend/I2CExtendPCA9555.h"
+#include "model/i2c.h"
+#include "link/link.h"
 
 
 std::map<String, BasicPINExtend *> extends;
@@ -8,7 +10,7 @@ std::map<String, BasicPINExtend *> extends;
 // 根据id获取扩展对象
 BasicPINExtend *getExtendById(const String &id) {
     // 不是干净的扩展id，是指定扩展引脚的id
-    if(id.startsWith(PREFIX_EXTEND)){
+    if (id.startsWith(PREFIX_EXTEND)) {
         String id2 = id.substring(strlen(PREFIX_EXTEND), id.indexOf("-"));
         return extends[id2];
     }
@@ -17,24 +19,30 @@ BasicPINExtend *getExtendById(const String &id) {
 
 
 // 卸载所有
-void ExtendDetach(){
-    for (const auto &entry: extends) {
-        auto *item = entry.second;
-        item->detach();
-        delete item;
+void ExtendDetach() {
+    for (auto &entry: extends) {
+        auto item = entry.second;
+        if (item != nullptr) {
+            item->detach();
+            delete item;
+            entry.second = nullptr;
+        }
     }
     extends.clear();
 }
+
 // 重置状态
 void ExtendReset() {
     for (const auto &entry: extends) {
-        entry.second->reset();
+        auto item = entry.second;
+        if (item != nullptr) {
+            item->reset();
+        }
     }
 }
 
 
-
-void child_digitals(JsonArray *_digitals, BasicDigitalExtend *extend, const String& id, int *index) {
+void child_digitals(JsonArray *_digitals, BasicDigitalExtend *extend, const String &id, int *index) {
     JsonArray digitals = *_digitals;
     for (JsonObject item: digitals) {
         auto pin = item["pin"].as<uint8_t>();
@@ -49,7 +57,7 @@ void child_digitals(JsonArray *_digitals, BasicDigitalExtend *extend, const Stri
     }
 }
 
-void child_pwms(JsonArray *_pwms, BasicPwmExtend *extend, const String& id, int *index) {
+void child_pwms(JsonArray *_pwms, BasicPwmExtend *extend, const String &id, int *index) {
     JsonArray pwms = *_pwms;
     for (JsonObject item: pwms) {
         auto pin = item["pin"].as<uint8_t>();
@@ -67,7 +75,7 @@ void child_pwms(JsonArray *_pwms, BasicPwmExtend *extend, const String& id, int 
     }
 }
 
-void child_servos(JsonArray *_servos, BasicServoExtend *extend, const String& id, int *index) {
+void child_servos(JsonArray *_servos, BasicServoExtend *extend, const String &id, int *index) {
     JsonArray servos = *_servos;
     for (JsonObject item: servos) {
         auto pin = item["pin"].as<uint8_t>();
@@ -86,7 +94,7 @@ void child_servos(JsonArray *_servos, BasicServoExtend *extend, const String& id
     }
 }
 
-void child_groups(JsonArray *_groups, const String& id, int *index) {
+void child_groups(JsonArray *_groups, const String &id, int *index) {
     JsonArray groups = *_groups;
     int g_index = 0;
     for (JsonObject item2: groups) {
@@ -97,9 +105,9 @@ void child_groups(JsonArray *_groups, const String& id, int *index) {
     }
 }
 
-void child_pins(JsonArray *_servos, BasicPINExtend *extend) {
-    JsonArray servos = *_servos;
-    for (JsonObject item: servos) {
+void child_pins(JsonArray *_pins, BasicPINExtend *extend) {
+    JsonArray pins = *_pins;
+    for (JsonObject item: pins) {
         auto pin = item["pin"].as<uint8_t>();
         String pin_id = PinId::extend(extend->id, pin);
         extend->id_to_pin[pin_id] = pin;
@@ -144,8 +152,8 @@ void InitExtend() {
             auto groups = v["groups"].as<JsonArray>();
             child_groups(&groups, pca9685->id, &index);
         }
-        if(chip == "pca9555"){
-            auto *pca9555 = new I2CExtendPCA9555();
+        if (chip == "pca9555") {
+            auto pca9555 = new I2CExtendPCA9555();
             auto address = v["address"].as<uint8_t>();
             pca9555->hz = v["hz"].as<int>();
             pca9555->address = address;

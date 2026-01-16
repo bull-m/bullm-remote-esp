@@ -11,23 +11,23 @@ void InitServo() {
         uint16_t key = RemoteKey::servo(index++);
         BasicServo *servo = nullptr;
         if (pin_s.startsWith(PREFIX_PIN)) {
-            auto *servo_io = new ServoIO();
+            auto servo_io = new ServoIO();
             servo_io->io_pin = pin_s.substring(strlen(PREFIX_PIN)).toInt();
             servo_io->setHz(item["hz"].isNull() ? SERVO_hz_DEFAULT : item["hz"]);
             servo_io->attach();
             servo = servo_io;
         } else if (pin_s.startsWith(PREFIX_EXTEND)) {
-            auto *extend = getExtendById(pin_s);
+            auto extend = getExtendById(pin_s);
             if (!extend) continue;
-            auto *extend_servo = dynamic_cast<BasicServoExtend *>(extend);
+            auto extend_servo = dynamic_cast<BasicServoExtend *>(extend);
             if (!extend_servo) continue;
             servo = extend_servo->useServo(extend->id_to_pin[pin_s]);
         } else if (pin_s.startsWith(PREFIX_PWM)) {
-            auto *output = getOutputById(pin_s);
+            auto output = getOutputById(pin_s);
             if (!output) continue;
-            auto *pwm = dynamic_cast<BasicPwm *>(output);
+            auto pwm = dynamic_cast<BasicPwm *>(output);
             if (!pwm) continue;
-            auto *servo_by_pwm = new ServoByPwm();
+            auto servo_by_pwm = new ServoByPwm();
             servo_by_pwm->attach(pwm);
             servo = servo_by_pwm;
         }

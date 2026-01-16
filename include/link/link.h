@@ -33,3 +33,4 @@ void WsInit();
 void WsAutoSend(const char *data, size_t len);
 void WsAutoSend(JsonDocument &json);
 void WsAutoSend(String str);
+bool WsIsLink();

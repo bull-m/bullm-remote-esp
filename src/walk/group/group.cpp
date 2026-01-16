@@ -5,7 +5,7 @@
 void GroupItemInit(JsonObject *_item, int key) {
     JsonObject item = *_item;
     String type = item["type"];
-    auto *group = new GroupMotor();
+    auto group = new GroupMotor();
     if (type == GROUP_TYPE_2D1PWM) {
         group->attach(
                 getOutputById(item["forward"]),

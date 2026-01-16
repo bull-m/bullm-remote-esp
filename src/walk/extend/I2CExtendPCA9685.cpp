@@ -20,9 +20,10 @@ bool I2CExtendPCA9685::_write(uint8_t reg, uint8_t data) {
     uint8_t buffer[2] = {reg, data};
     return I2cWrite(address, buffer, 2);
 }
-void I2CExtendPCA9685::_reset(){
-    _write(PCA9685_MODE1, MODE1_RESTART);
+bool I2CExtendPCA9685::_reset(){
+    auto res = _write(PCA9685_MODE1, MODE1_RESTART);
     delay(10);
+    return res;
 }
 bool I2CExtendPCA9685::_setFreq(uint16_t freq) {
     if (freq < 1)

@@ -79,10 +79,13 @@ static unsigned long last_time = 0;
 
 // 卸载所有
 void detach_all() {
-    for (const auto &entry: outputs) {
-        auto *item = entry.second;
-        item->detach();
-        delete item;
+    for (auto &entry: outputs) {
+        auto item = entry.second;
+        if(item != nullptr){
+            item->detach();
+            delete item;
+            entry.second = nullptr;
+        }
     }
     outputs.clear();
     ExtendDetach();
@@ -101,8 +104,10 @@ void WalkInit() {
 // 重置状态
 void WalkReset() {
     ExtendReset();
-    for (const auto &entry: outputs) {
-        entry.second->reset(false);
+    for (auto &entry: outputs) {
+        if(entry.second != nullptr){
+            entry.second->reset(false);
+        }
     }
 }
 
@@ -126,8 +131,10 @@ JsonDocument *WalkHandle(JsonDocument &data) {
     JsonObject obj = json["data"].to<JsonObject>();
     if (mode == "device-state") {
         for (const auto &entry: outputs) {
-            auto *device = entry.second;
-            obj[device->id] = device->read();
+            auto device = entry.second;
+            if(device != nullptr){
+                obj[device->id] = device->read();
+            }
         }
     }
     return req;

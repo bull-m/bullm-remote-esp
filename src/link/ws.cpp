@@ -5,8 +5,12 @@ AsyncWebSocket ws("/ws");
 
 bool isNetwork = false;
 
-uint32_t ws_id = 0; // WebSocket ID
+uint32_t ws_id = -1; // WebSocket ID
 uint8_t *all_data = nullptr;
+
+bool WsIsLink(){
+    return ws_id > -1;
+}
 
 // TODO 连接互联网
 void linkNetworkWs() {
@@ -116,6 +120,7 @@ void WsInit() {
                 HandleConnect();
                 break;
             case WS_EVT_DISCONNECT:  // 有客户端断开连接
+                ws_id = -1;
                 Serial.printf("WebSocket client #%u disconnected \n", client->id());
                 HandleDisconnect();
                 break;
