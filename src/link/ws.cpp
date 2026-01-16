@@ -5,11 +5,11 @@ AsyncWebSocket ws("/ws");
 
 bool isNetwork = false;
 
-uint32_t ws_id = -1; // WebSocket ID
+uint32_t ws_id = 0; // WebSocket ID
 uint8_t *all_data = nullptr;
 
-bool WsIsLink(){
-    return ws_id > -1;
+bool WsIsLink() {
+    return ws_id > 0;
 }
 
 // TODO 连接互联网
@@ -92,7 +92,9 @@ void WsInit() {
                     return;
                 }
                 if (info->index == 0 && info->num == 0) {
-                    delete all_data;
+                    if (all_data != nullptr) {
+                        delete all_data;
+                    }
                     all_data = new uint8_t[info->len];
                 }
                 // 复制数据
@@ -107,6 +109,7 @@ void WsInit() {
                         HandleWsByte(all_data, info->len);
                     }
                     delete all_data;
+                    all_data = nullptr;
                 }
             }
                 break;
@@ -120,7 +123,7 @@ void WsInit() {
                 HandleConnect();
                 break;
             case WS_EVT_DISCONNECT:  // 有客户端断开连接
-                ws_id = -1;
+                ws_id = 0;
                 Serial.printf("WebSocket client #%u disconnected \n", client->id());
                 HandleDisconnect();
                 break;
