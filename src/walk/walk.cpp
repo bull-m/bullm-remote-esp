@@ -80,11 +80,11 @@ static unsigned long last_time = 0;
 // 卸载所有
 void detach_all() {
     for (auto &entry: outputs) {
-        auto item = entry.second;
-        if(item != nullptr){
+        auto &item = entry.second;
+        if (item != nullptr) {
             item->detach();
             delete item;
-            entry.second = nullptr;
+            item = nullptr;
         }
     }
     outputs.clear();
@@ -105,7 +105,7 @@ void WalkInit() {
 void WalkReset() {
     ExtendReset();
     for (auto &entry: outputs) {
-        if(entry.second != nullptr){
+        if (entry.second != nullptr) {
             entry.second->reset(false);
         }
     }
@@ -132,7 +132,7 @@ JsonDocument *WalkHandle(JsonDocument &data) {
     if (mode == "device-state") {
         for (const auto &entry: outputs) {
             auto device = entry.second;
-            if(device != nullptr){
+            if (device != nullptr) {
                 obj[device->id] = device->read();
             }
         }
@@ -168,7 +168,7 @@ void WalkHandle(uint8_t *data, size_t len) {
                 outputs[key]->write(values, 2);
                 break;
             }
-            // 多字节数据
+                // 多字节数据
             case CONTROL_BYTES: {
                 uint8_t high = data[i++];
                 uint16_t key = merge2byte(high, data[i++]);

@@ -14,6 +14,7 @@
 #include "model/info.h"
 #include "link/link.h"
 #include "main.h"
+#include "model/error.h"
 
 JsonDocument doc; // 用于接收json
 
@@ -72,7 +73,8 @@ void HandleDisconnect() {
 }
 // 连接处理
 void HandleConnect() {
-    WalkReset();
+    WalkReset(); // 重置运动状态
     digitalWrite(PIN_TIP_LED, HIGH); // 指示灯
     digitalWrite(PIN_MOTOR_ENABLE, HIGH); // 启用电机
+    ErrorSendToClient(); // 发送累计的错误信息
 }

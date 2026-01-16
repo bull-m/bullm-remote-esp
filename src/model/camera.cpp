@@ -4,6 +4,7 @@
 #include <esp_task_wdt.h>
 #include <main.h>
 #include "link/link.h"
+#include "model/error.h"
 
 
 bool camera_pause = false;
@@ -60,6 +61,7 @@ int start() {
     if (err != ESP_OK) {
         Serial.printf("Camera init failed with error 0x%x", err);
         Serial.println("");
+        ErrorAdd("相机启动失败, 错误码 -> 0x" + String(err, 16));
         runing = false; // 取消运行
         return err;
     }
@@ -122,6 +124,11 @@ JsonDocument *handleTypeGetVideoStatus() {
     auto *req = new JsonDocument();
     auto &json = *req;
     sensor_t *s = esp_camera_sensor_get();
+    if(s == nullptr){
+        ErrorAdd("摄像头无法连接，请检查");
+        json["info_name"] = "摄像头未连接";
+        return req;
+    }
     camera_sensor_info_t *info = esp_camera_sensor_get_info(&s->id);
     json["xclk"] = s->xclk_freq_hz;
 //    json["pixformat"] = s->pixformat;

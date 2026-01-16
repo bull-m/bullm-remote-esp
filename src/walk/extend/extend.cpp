@@ -3,6 +3,7 @@
 #include "walk/extend/I2CExtendPCA9555.h"
 #include "model/i2c.h"
 #include "link/link.h"
+#include "model/error.h"
 
 
 std::map<String, BasicPINExtend *> extends;
@@ -21,11 +22,11 @@ BasicPINExtend *getExtendById(const String &id) {
 // 卸载所有
 void ExtendDetach() {
     for (auto &entry: extends) {
-        auto item = entry.second;
+        auto &item = entry.second;
         if (item != nullptr) {
             item->detach();
             delete item;
-            entry.second = nullptr;
+            item = nullptr;
         }
     }
     extends.clear();
@@ -123,9 +124,13 @@ void InitExtend() {
         String chip = v["chip"];
 
         // 加载顺序不允许改变 = 电平 > PWM > Servo > 组合
-        if(chip == "pca9685"){
-            auto *pca9685 = new I2CExtendPCA9685();
+        if (chip == "pca9685") {
             auto address = v["address"].as<uint8_t>();
+            if (!I2cScan(address)) {
+                ErrorAdd("扩展版 [" + v["name"].as<String>() + "] 无法连接，请检查");
+                continue;
+            }
+            auto pca9685 = new I2CExtendPCA9685();
             pca9685->hz = v["hz"].as<int>();
             pca9685->address = address;
             pca9685->id = v["id"].as<String>();
