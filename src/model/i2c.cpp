@@ -4,29 +4,35 @@
 size_t maxBufferSize = I2C_BUFFER_LENGTH;
 
 std::map<uint8_t, uint8_t> i2cs;
-void scan(){
+
+void scan() {
     i2cs.clear();
-    for(byte address = 0; address <= 127; address++){
+    for (byte address = 0; address <= 127; address++) {
         Wire.beginTransmission(address);
         i2cs[address] = Wire.endTransmission();
     }
 }
 
-JsonDocument * I2cHandle(JsonDocument &data){
+bool I2cScan(byte address) {
+    Wire.beginTransmission(address);
+    return Wire.endTransmission() == 0;
+}
+
+JsonDocument *I2cHandle(JsonDocument &data) {
     String mode = data["mode"];
     auto *req = new JsonDocument();
     auto &json = *req;
     JsonArray arr = json["data"].to<JsonArray>();
-    if(mode == "scan"){
+    if (mode == "scan") {
         scan();
-        for (const auto &entry : i2cs){
+        for (const auto &entry: i2cs) {
             arr.add(entry.second);
         }
     }
     return req;
 }
 
-void I2cInit(){
+void I2cInit() {
     Wire.begin(SDA, SCL, 100000UL); // ,100000
 
 //    // if you want to really speed stuff up, you can go into 'fast 400khz I2C' mode
@@ -58,6 +64,7 @@ bool _read(uint8_t address, uint8_t *buffer, size_t len, bool stop) {
     }
     return true;
 }
+
 bool I2cRead(uint8_t address, uint8_t *buffer, size_t len, bool stop) {
     size_t pos = 0;
     while (pos < len) {
@@ -81,8 +88,8 @@ bool I2cRead(uint8_t address, uint8_t *buffer, size_t len, bool stop) {
  * @return 是否成功
  */
 bool I2cWriteThenRead(uint8_t address, const uint8_t *write_buffer,
-                                      size_t write_len, uint8_t *read_buffer,
-                                      size_t read_len, bool stop) {
+                      size_t write_len, uint8_t *read_buffer,
+                      size_t read_len, bool stop) {
     if (!I2cWrite(address, write_buffer, write_len, stop)) {
         return false;
     }
