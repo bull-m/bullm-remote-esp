@@ -61,7 +61,7 @@ int start() {
     if (err != ESP_OK) {
         Serial.printf("Camera init failed with error 0x%x", err);
         Serial.println("");
-        ErrorAdd("相机启动失败, 错误码 -> 0x" + String(err, 16));
+        ErrorAdd("相机启动失败: "+ String(esp_err_to_name(err)) +" code: 0x" + String(err, 16));
         runing = false; // 取消运行
         return err;
     }
